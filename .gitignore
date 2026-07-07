@@ -1,0 +1,5 @@
+data/raw/
+*.parquet
+__pycache__/
+.venv/
+*.pyc
