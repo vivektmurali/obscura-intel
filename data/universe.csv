@@ -1,0 +1,39 @@
+ticker,yf_symbol,company_name,aliases,sector
+ALKEM,ALKEM.NS,Alkem Laboratories Ltd,Alkem Labs,Pharmaceuticals & Drugs
+AUROPHARMA,AUROPHARMA.NS,Aurobindo Pharma Ltd,,Pharmaceuticals & Drugs
+BIOCON,BIOCON.NS,Biocon Ltd,,Pharmaceuticals & Drugs
+LAURUSLABS,LAURUSLABS.NS,Laurus Labs Ltd,Laurus Laboratories,Pharmaceuticals & Drugs
+LUPIN,LUPIN.NS,Lupin Ltd,,Pharmaceuticals & Drugs
+COFORGE,COFORGE.NS,Coforge Ltd,NIIT Technologies,IT - Software
+MPHASIS,MPHASIS.NS,MphasiS Ltd,Mphasis,IT - Software
+PERSISTENT,PERSISTENT.NS,Persistent Systems Ltd,,IT - Software
+TATAELXSI,TATAELXSI.NS,Tata Elxsi Ltd,,IT - Software
+AUBANK,AUBANK.NS,AU Small Finance Bank Ltd,,Bank - Private
+IDFCFIRSTB,IDFCFIRSTB.NS,IDFC First Bank Ltd,IDFC Bank,Bank - Private
+INDUSINDBK,INDUSINDBK.NS,IndusInd Bank Ltd,,Bank - Private
+FEDERALBNK,FEDERALBNK.NS,The Federal Bank Ltd,Federal Bank,Bank - Private
+ABCAPITAL,ABCAPITAL.NS,Aditya Birla Capital Ltd,,Finance - NBFC
+ICICIGI,ICICIGI.NS,ICICI Lombard General Insurance Company Ltd,ICICI Lombard,Insurance
+LTF,LTF.NS,L&T Finance Ltd,L&T Finance Holdings,Finance - NBFC
+LICHSGFIN,LICHSGFIN.NS,LIC Housing Finance Ltd,,Finance - Housing
+M&MFIN,M&MFIN.NS,Mahindra & Mahindra Financial Services Ltd,Mahindra Finance,Finance - NBFC
+ASHOKLEY,ASHOKLEY.NS,Ashok Leyland Ltd,,Automobiles-Trucks/LCV
+BHARATFORG,BHARATFORG.NS,Bharat Forge Ltd,,Forgings
+HEROMOTOCO,HEROMOTOCO.NS,Hero MotoCorp Ltd,,Automobile Two & Three Wheelers
+COLPAL,COLPAL.NS,Colgate-Palmolive (India) Ltd,Colgate India,Household & Personal Products
+DABUR,DABUR.NS,Dabur India Ltd,Dabur,Household & Personal Products
+MARICO,MARICO.NS,Marico Ltd,,Edible Oil
+NATIONALUM,NATIONALUM.NS,National Aluminium Company Ltd,Nalco,Aluminium & Aluminium Products
+NMDC,NMDC.NS,NMDC Ltd,National Mineral Development Corporation,Mining & Minerals
+NHPC,NHPC.NS,NHPC Ltd,National Hydroelectric Power Corporation,Power Generation/Distribution
+OIL,OIL.NS,Oil India Ltd,,Oil Exploration
+CESC,CESC.NS,CESC Ltd,Calcutta Electric Supply Corporation,Power Generation/Distribution
+GODREJPROP,GODREJPROP.NS,Godrej Properties Ltd,,Construction - Real Estate
+OBEROIRLTY,OBEROIRLTY.NS,Oberoi Realty Ltd,,Construction - Real Estate
+PRESTIGE,PRESTIGE.NS,Prestige Estates Projects Ltd,Prestige Group,Construction - Real Estate
+PIIND,PIIND.NS,PI Industries Ltd,,Pesticides & Agrochemicals
+COROMANDEL,COROMANDEL.NS,Coromandel International Ltd,Coromandel Fertilisers,Fertilizers
+AARTIIND,AARTIIND.NS,Aarti Industries Ltd,,Chemicals
+HAVELLS,HAVELLS.NS,Havells India Ltd,Havells,Electric Equipment
+VOLTAS,VOLTAS.NS,Voltas Ltd,,Air Conditioners
+BLUESTARCO,BLUESTARCO.NS,Blue Star Ltd,,Air Conditioners

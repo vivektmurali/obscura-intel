@@ -1,0 +1,39 @@
+ticker,company_name,total_articles,nonzero_days,nonzero_days_per_year,max_daily_count,partial
+ALKEM,Alkem Laboratories Ltd,291,217,72.3,4,False
+AUROPHARMA,Aurobindo Pharma Ltd,309,254,84.7,4,False
+BIOCON,Biocon Ltd,423,291,97.0,7,False
+LAURUSLABS,Laurus Labs Ltd,221,184,61.3,3,False
+LUPIN,Lupin Ltd,447,339,113.0,6,False
+COFORGE,Coforge Ltd,425,293,97.7,10,False
+MPHASIS,MphasiS Ltd,1599,642,214.0,20,False
+PERSISTENT,Persistent Systems Ltd,288,232,77.3,3,False
+TATAELXSI,Tata Elxsi Ltd,233,214,71.3,4,False
+AUBANK,AU Small Finance Bank Ltd,336,269,89.7,3,False
+IDFCFIRSTB,IDFC First Bank Ltd,3711,936,312.0,31,False
+INDUSINDBK,IndusInd Bank Ltd,1097,435,145.0,14,False
+FEDERALBNK,The Federal Bank Ltd,4027,980,326.7,30,False
+ABCAPITAL,Aditya Birla Capital Ltd,76,64,21.3,3,False
+ICICIGI,ICICI Lombard General Insurance Company Ltd,1232,574,191.3,18,False
+LTF,L&T Finance Ltd,381,219,73.0,9,False
+LICHSGFIN,LIC Housing Finance Ltd,77,60,20.0,6,False
+M&MFIN,Mahindra & Mahindra Financial Services Ltd,596,334,111.3,17,False
+ASHOKLEY,Ashok Leyland Ltd,508,358,119.3,7,False
+BHARATFORG,Bharat Forge Ltd,594,400,133.3,8,False
+HEROMOTOCO,Hero MotoCorp Ltd,1060,429,143.0,13,False
+COLPAL,Colgate-Palmolive (India) Ltd,780,436,145.3,23,False
+DABUR,Dabur India Ltd,3556,924,308.0,28,False
+MARICO,Marico Ltd,429,338,112.7,6,False
+NATIONALUM,National Aluminium Company Ltd,1010,494,164.7,15,False
+NMDC,NMDC Ltd,812,469,156.3,28,False
+NHPC,NHPC Ltd,532,352,117.3,10,False
+OIL,Oil India Ltd,454,280,93.3,8,False
+CESC,CESC Ltd,231,162,54.0,16,False
+GODREJPROP,Godrej Properties Ltd,525,347,115.7,17,False
+OBEROIRLTY,Oberoi Realty Ltd,316,248,82.7,4,False
+PRESTIGE,Prestige Estates Projects Ltd,727,445,148.3,10,False
+PIIND,PI Industries Ltd,248,227,75.7,5,False
+COROMANDEL,Coromandel International Ltd,187,144,48.0,5,False
+AARTIIND,Aarti Industries Ltd,37,32,10.7,3,False
+HAVELLS,Havells India Ltd,1780,705,235.0,21,False
+VOLTAS,Voltas Ltd,278,238,79.3,6,False
+BLUESTARCO,Blue Star Ltd,127,99,33.0,4,False
