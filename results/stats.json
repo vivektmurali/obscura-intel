@@ -1,0 +1,65 @@
+{
+  "n_permutations": 1000,
+  "seed": 42,
+  "n_events_total": 242,
+  "primary": {
+    "statistic": "mean(sign(tone_z) x CAR_t5)",
+    "observed": -0.0015110979473717564,
+    "p_value": 0.7632367632367633,
+    "pass": false,
+    "threshold": 0.05
+  },
+  "secondary": [
+    {
+      "label": "tone_signed_CAR_t1",
+      "observed": -0.0008630776214625267,
+      "p_value": 0.8291708291708292,
+      "fdr_survives": false
+    },
+    {
+      "label": "tone_signed_CAR_t20",
+      "observed": -0.004668376277881359,
+      "p_value": 0.8791208791208791,
+      "fdr_survives": false
+    },
+    {
+      "label": "abs_CAR_t1_vs_null",
+      "observed": 0.01201194603233801,
+      "p_value": 0.23776223776223776,
+      "fdr_survives": false
+    },
+    {
+      "label": "abs_CAR_t5_vs_null",
+      "observed": 0.02649582652752724,
+      "p_value": 0.5494505494505495,
+      "fdr_survives": false
+    },
+    {
+      "label": "abs_CAR_t20_vs_null",
+      "observed": 0.05503366761602467,
+      "p_value": 0.8541458541458542,
+      "fdr_survives": false
+    },
+    {
+      "label": "tone_tercile_spread_CAR_t5",
+      "observed": -0.002989286591635607,
+      "p_value": 0.7412587412587412,
+      "fdr_survives": false
+    }
+  ],
+  "robustness": {
+    "fallback_spike_threshold": "not applicable -- primary threshold already cleared the >=150 event gate",
+    "market_adjusted_returns": {
+      "note": "market-model observed T5 vs a market-adjusted-CAR null is not a like-for-like comparison; reported for transparency only",
+      "p_value_vs_market_adjusted_null": 0.8331668331668332
+    },
+    "drop_high_simultaneity_days": {
+      "threshold": ">3 simultaneous tickers",
+      "dropped_dates": [],
+      "n_events_dropped": 0,
+      "observed_T5_declustered": -0.0015110979473717564,
+      "p_value": 0.7632367632367633
+    }
+  },
+  "verdict": "NULL"
+}
