@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Obscura Intel{% endblock %}</title>
+  <meta name="description" content="{% block description %}A pre-registered, live-updating event study of news-volume spikes in NSE mid/small-cap names.{% endblock %}" />
+  <link rel="stylesheet" href="{{ root }}static/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a href="{{ root }}index.html" class="wordmark">obscura<span class="dot">·</span>intel</a>
+      <nav class="site-nav">
+        <a href="{{ root }}index.html" class="{{ 'active' if page == 'feed' else '' }}">Live feed</a>
+        <a href="{{ root }}tickers.html" class="{{ 'active' if page == 'tickers' else '' }}">Tickers</a>
+        <a href="{{ root }}methodology.html" class="{{ 'active' if page == 'methodology' else '' }}">Methodology</a>
+        <a href="{{ root }}about.html" class="{{ 'active' if page == 'about' else '' }}">About</a>
+      </nav>
+    </div>
+  </header>
+  <div class="page">
+    {% block content %}{% endblock %}
+  </div>
+  <footer class="site-footer">
+    Obscura Intel &middot; built {{ build_time }} &middot;
+    <a href="https://github.com/vivektmurali/obscura-intel">source on GitHub</a> &middot;
+    verdict as of the pre-registered v0.1 study: <strong class="mono">{{ verdict }}</strong>
+  </footer>
+</body>
+</html>

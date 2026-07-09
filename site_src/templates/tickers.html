@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Obscura Intel — tickers{% endblock %}
+{% block content %}
+
+<div class="eyebrow">The universe</div>
+<h1>{{ n_tickers }} tickers</h1>
+<p style="color:var(--ink-soft)">
+  Nifty Midcap 100 + Smallcap 100 constituents, filtered for distinctive company names and price-history
+  availability. Full selection rationale in the <a href="{{ root }}methodology.html">methodology</a>.
+</p>
+
+<div class="ticker-grid">
+  {% for t in tickers %}
+  <a href="{{ root }}tickers/{{ t.ticker }}.html" class="ticker-tile" style="display:block;">
+    <div class="sym mono">{{ t.ticker }}</div>
+    <div class="sector">{{ t.sector }}</div>
+    <div class="n-events">{{ t.n_events }} event{{ '' if t.n_events == 1 else 's' }}</div>
+  </a>
+  {% endfor %}
+</div>
+
+{% endblock %}

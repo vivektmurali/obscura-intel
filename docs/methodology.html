@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Methodology — Obscura Intel</title>
+  <meta name="description" content="A pre-registered, live-updating event study of news-volume spikes in NSE mid/small-cap names." />
+  <link rel="stylesheet" href="static/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a href="index.html" class="wordmark">obscura<span class="dot">·</span>intel</a>
+      <nav class="site-nav">
+        <a href="index.html" class="">Live feed</a>
+        <a href="tickers.html" class="">Tickers</a>
+        <a href="methodology.html" class="active">Methodology</a>
+        <a href="about.html" class="">About</a>
+      </nav>
+    </div>
+  </header>
+  <div class="page">
+    
+
+<div class="eyebrow">The study</div>
+<h1>Do news-volume spikes predict abnormal returns, in the direction of tone?</h1>
+
+<p>
+  The original framing behind this project — "every stock move has an event behind it" — is
+  retrodictive and untestable: post-hoc narrative matching is free and worthless, and a large share of
+  major price moves have no identifiable news driver at all. The question above is the only
+  falsifiable, forward-running version, so it's the only one this study tests.
+</p>
+
+<h2>Design</h2>
+<ul class="limitations">
+  <li><strong>Universe:</strong> 38 NSE mid/small-cap tickers, Nifty Midcap 100 +
+    Smallcap 100, filtered for distinctive company names and price-history availability.</li>
+  <li><strong>Events:</strong> a trailing-90-day <code>vol_z</code> z-score on GDELT article volume
+    &ge; 3, with &ge; 5 articles that day; consecutive event days merged to the first. Direction is
+    the sign of the equivalently-computed tone z-score.</li>
+  <li><strong>Entry rule:</strong> close of the first NSE trading day strictly after the event's UTC
+    date — never the event day itself.</li>
+  <li><strong>Returns:</strong> market model (OLS vs ^NSEI) over a 120-trading-day window ending 21
+    days before entry; CAR at t+1, t+5, t+20.</li>
+  <li><strong>Inference:</strong> one-sided permutation test (1,000 seeded draws) on the primary
+    statistic, six secondary tests under Benjamini-Hochberg FDR correction at q=0.10, one
+    pre-registered robustness pass.</li>
+</ul>
+
+<p>
+  Full design lock: <a href="https://github.com/vivektmurali/obscura-intel/blob/main/PREREGISTRATION.md">PREREGISTRATION.md</a>,
+  committed at <a href="https://github.com/vivektmurali/obscura-intel/commit/96b9c1e"><code>96b9c1e</code></a>
+  before any event data was joined to price data.
+</p>
+
+<h2>Result</h2>
+<p>
+  <strong>Verdict: NULL.</strong> Primary test —
+  <code>mean(sign(tone_z) &times; CAR_t5)</code> — came out
+  <strong class="mono">-0.00151</strong>, one-sided permutation
+  p&nbsp;=&nbsp;<strong class="mono">0.763</strong> (threshold p&nbsp;&lt;&nbsp;0.05). The point
+  estimate has the <em>wrong sign</em> relative to the thesis. No secondary test survives BH-FDR
+  (best: p&nbsp;=&nbsp;0.238). The robustness pass doesn't change this.
+</p>
+<p>
+  Per the pre-registered kill criterion: <strong>"no detectable edge under this specification."</strong>
+  No respecification is permitted now that results have been seen — this stands as the answer.
+  Full numeric detail and figures in the
+  <a href="https://github.com/vivektmurali/obscura-intel#results">v0.1 README</a>.
+</p>
+
+<h2>Live pipeline</h2>
+<p>
+  This site and its <a href="index.html">live feed</a> run on a daily GitHub Actions cron: new
+  GDELT volume/tone days are fetched, events recomputed over the full history, and each new event
+  scored — intensity (news-volume percentile vs. the locked historical distribution) and novelty
+  (days since that ticker's last event) only. Because the verdict is NULL, <strong>no forward-return
+  number is ever shown or implied</strong> for a live event; that constraint is enforced in code, not
+  just by convention.
+</p>
+
+<h2>Limitations</h2>
+<ul class="limitations">
+  <li><strong>Survivorship bias:</strong> the universe is drawn from current index constituents, not
+    constituents as of 2023.</li>
+  <li><strong>Name-string entity matching is blunt:</strong> GDELT matching is exact-phrase string
+    matching, not true entity resolution. A qualitative spot-check found 2-3 of the 20 largest
+    historical spikes were contaminated by generic multi-company market-roundup articles.</li>
+  <li><strong>Cross-sectional clustering:</strong> market-wide news days can inflate apparent
+    significance. The pre-registered robustness pass found nothing to drop in this dataset, but the
+    underlying risk remains disclosed.</li>
+  <li><strong>Single market, single benchmark:</strong> NSE only, ^NSEI only.</li>
+  <li><strong>GDELT coverage bias:</strong> crawl coverage favors certain outlets and languages.</li>
+  <li><strong>Two tickers dropped</strong> (SAIL, BHEL) after persistent, unexplained GDELT fetch
+    failures across three retry passes.</li>
+</ul>
+
+
+  </div>
+  <footer class="site-footer">
+    Obscura Intel &middot; built 2026-07-09 12:17 UTC &middot;
+    <a href="https://github.com/vivektmurali/obscura-intel">source on GitHub</a> &middot;
+    verdict as of the pre-registered v0.1 study: <strong class="mono">NULL</strong>
+  </footer>
+</body>
+</html>

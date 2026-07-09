@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Obscura Intel — live feed{% endblock %}
+{% block content %}
+
+<div class="eyebrow">Pre-registered event study &middot; NSE mid/small caps &middot; live since {{ live_since }}</div>
+<h1>An instrument that watches constantly and, so far, correctly reports nothing.</h1>
+<p class="ink-soft" style="color:var(--ink-soft)">
+  Obscura Intel detects news-volume spikes in {{ n_tickers }} NSE mid/small-cap stocks every day and
+  checks whether the direction of coverage predicts what the stock does next. The pre-registered
+  study behind this feed found <strong>no such edge</strong> — see the verdict below. The pipeline
+  keeps running daily regardless, because a quiet instrument is still a working one.
+</p>
+
+<div class="hero-verdict">
+  <div class="verdict-word mono" style="color:var(--ink-faint)">{{ verdict }}</div>
+  <div class="verdict-meta">
+    Primary test p&nbsp;=&nbsp;<strong class="mono">{{ primary_p }}</strong>, threshold p&nbsp;&lt;&nbsp;0.05.
+    No secondary test survives FDR correction. Full statistical detail on the
+    <a href="{{ root }}methodology.html">methodology page</a>.
+  </div>
+</div>
+
+<div class="stat-row">
+  <div class="stat">
+    <div class="label">Tickers monitored</div>
+    <div class="value mono">{{ n_tickers }}</div>
+  </div>
+  <div class="stat">
+    <div class="label">Events tracked (live)</div>
+    <div class="value mono">{{ n_events_total }}</div>
+  </div>
+  <div class="stat">
+    <div class="label">New in last run</div>
+    <div class="value mono">{{ n_new_events }}</div>
+  </div>
+  <div class="stat">
+    <div class="label">Pipeline last ran</div>
+    <div class="value mono">{{ last_run_date }}</div>
+  </div>
+</div>
+
+<h2>Recent events</h2>
+{% if recent_events %}
+<div class="card" style="padding:4px 20px;">
+  {% for ev in recent_events %}
+  <div class="event-row">
+    <div class="date mono">{{ ev.event_date }}</div>
+    <div>
+      <a href="{{ root }}tickers/{{ ev.ticker }}.html" class="ticker-name">{{ ev.ticker }}</a>
+      <span class="ticker-sector">{{ ev.sector }}</span>
+    </div>
+    <div class="score">
+      <span class="chip {{ 'up' if ev.direction > 0 else 'down' }}">
+        {{ '+' if ev.direction > 0 else '−' }} tone
+      </span>
+      <div class="mono" style="margin-top:4px; font-size:0.8rem; color:var(--ink-faint);">
+        intensity {{ ev.intensity_percentile }}<span style="opacity:.6">th pct</span>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">No events recorded yet.</div>
+{% endif %}
+
+<p style="margin-top:28px; font-size:0.86rem; color:var(--ink-faint);">
+  Scores shown are <strong>intensity</strong> (this event's news-volume spike, as a percentile against
+  the study's locked historical distribution) and tone <strong>direction</strong> only — never a
+  forward-return number. The pre-registered verdict found no predictive value in tone direction, so
+  none is implied here.
+</p>
+
+{% endblock %}

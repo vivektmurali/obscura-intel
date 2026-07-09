@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}About — Obscura Intel{% endblock %}
+{% block content %}
+
+<div class="eyebrow">Why this exists</div>
+<h1>Portfolio evidence, not a trading signal.</h1>
+
+<p>
+  This repo is portfolio evidence for UK data/statistics roles. The audience cares about method
+  quality — pre-registration, null controls, multiple-testing correction, honest limitations — not
+  Sharpe ratios. <strong>A well-executed null result is a full success for that purpose.</strong>
+</p>
+<p>
+  The discipline of committing a pre-registration before joining event data to price data, running a
+  real permutation null instead of eyeballing significance, and reporting the result exactly as it
+  came out — including a wrong-signed point estimate — demonstrates exactly the evaluation rigor those
+  roles hire for.
+</p>
+<p>
+  The live pipeline that powers this site exists to prove the engineering runs unattended, not because
+  the (null) result implies anything worth watching for. It has no server: everything here is static
+  files rebuilt daily by a GitHub Actions cron and published to GitHub Pages.
+</p>
+
+<h2>Provenance</h2>
+<p>
+  Every number on this site traces back to a cached raw API response and a committed, auditable
+  pipeline. Source, decisions log, and full history:
+  <a href="https://github.com/vivektmurali/obscura-intel">github.com/vivektmurali/obscura-intel</a>.
+</p>
+
+<h2>Owner</h2>
+<p>Vivek Murali.</p>
+
+{% endblock %}

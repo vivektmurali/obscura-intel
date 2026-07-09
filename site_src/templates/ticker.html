@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ ticker }} — Obscura Intel{% endblock %}
+{% block content %}
+
+<div class="eyebrow">{{ sector }}</div>
+<h1>{{ company_name }} <span class="mono" style="font-size:1.1rem; color:var(--ink-faint);">{{ ticker }}</span></h1>
+
+<div class="chart-frame">
+  <img src="{{ root }}charts/{{ ticker }}.png" alt="{{ ticker }} price history with event markers" loading="lazy" />
+</div>
+
+<div class="stat-row">
+  <div class="stat">
+    <div class="label">Events detected</div>
+    <div class="value mono">{{ events|length }}</div>
+  </div>
+  <div class="stat">
+    <div class="label">Most recent</div>
+    <div class="value mono">{{ events[0].event_date if events else "—" }}</div>
+  </div>
+  <div class="stat">
+    <div class="label">Max intensity</div>
+    <div class="value mono">{{ max_intensity }}<span style="opacity:.6">th pct</span></div>
+  </div>
+</div>
+
+<h2>Event history</h2>
+{% if events %}
+<table class="plain">
+  <thead>
+    <tr><th>Date</th><th>Direction</th><th>Intensity</th><th>Novelty</th></tr>
+  </thead>
+  <tbody>
+    {% for ev in events %}
+    <tr>
+      <td class="mono">{{ ev.event_date }}</td>
+      <td><span class="chip {{ 'up' if ev.direction > 0 else 'down' }}">{{ '+' if ev.direction > 0 else '−' }} tone</span></td>
+      <td class="mono">{{ ev.intensity_percentile }}th pct</td>
+      <td class="mono">{{ ev.novelty_days if ev.novelty_days is not none else "first seen" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">No qualifying spike days detected for this ticker under the pre-registered threshold.</div>
+{% endif %}
+
+{% endblock %}
