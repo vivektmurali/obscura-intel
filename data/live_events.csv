@@ -1,1 +1,1 @@
-ticker,event_date,v,vol_z,tone,tone_z,direction
+ticker,event_date,v,vol_z,tone,tone_z,direction,intensity_percentile,novelty_days
