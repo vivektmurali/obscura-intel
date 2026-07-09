@@ -1,5 +1,6 @@
 data/raw/
-*.parquet
+data/live/raw/
+data/prices.parquet
 __pycache__/
 .venv/
 *.pyc
