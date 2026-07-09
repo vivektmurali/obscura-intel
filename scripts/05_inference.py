@@ -27,6 +27,7 @@ EVENTS_CSV = ROOT / "data" / "events.csv"
 CAR_CSV = ROOT / "results" / "car_by_event.csv"
 PRICES_PARQUET = ROOT / "data" / "prices.parquet"
 STATS_JSON = ROOT / "results" / "stats.json"
+NULL_DIST_CSV = ROOT / "results" / "null_distributions.csv"
 
 BENCHMARK = "^NSEI"
 EST_WINDOW = 120
@@ -205,6 +206,11 @@ def main():
     null_df = pd.DataFrame(null_rows)
     null_df_adj = pd.DataFrame(null_rows_adj)
     tercile_null_vals = np.array(tercile_null_vals)
+
+    null_export = null_df.copy()
+    null_export["T5_adj"] = null_df_adj["T5_adj"]
+    null_export["tercile_spread"] = tercile_null_vals
+    null_export.to_csv(NULL_DIST_CSV, index=False)
 
     # observed statistics from the real (market-model) event study
     car_valid5 = car.dropna(subset=["CAR_t5"])
