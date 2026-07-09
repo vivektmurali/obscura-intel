@@ -10,6 +10,12 @@ fix. The pipeline engineering and the pre-registration discipline are the
 actual deliverable here, not a trading signal (see [Why this
 project](#why-this-project)).
 
+**Live site: [vivektmurali.github.io/obscura-intel](https://vivektmurali.github.io/obscura-intel/)**
+— the v0.1 study above is a fixed, locked artifact; a separate live pipeline
+(post-v0.1, [ARCHITECTURE.md](ARCHITECTURE.md)) runs the same event-detection
+logic daily via GitHub Actions and publishes a static site, verdict-bounded to
+what v0.1 actually found. See [Live pipeline](#live-pipeline-v10) below.
+
 ---
 
 ## The question
@@ -166,7 +172,44 @@ rather than reading tea leaves from individual cases.
 
 None of the above is in scope for v0.1 — see `PARKING.md` for the full list
 of parked ideas, and `HANDOVER.md` §5 for the binding ban list this project
-operated under.
+operated under. (The live pipeline below is a separate, explicitly
+overridden exception to that ban list — see the next section — but doesn't
+address any of the methodological gaps listed above; those remain open.)
+
+## Live pipeline (v1.0)
+
+The v0.1 study above is frozen: `data/events.csv`, `data/prices.parquet`,
+`results/*` and the verdict never change. Everything in this section is a
+**separate, later addition** ([ARCHITECTURE.md](ARCHITECTURE.md)'s post-v0.1
+roadmap), explicitly authorized past HANDOVER.md's original ban list
+one phase at a time (see `PARKING.md` for each override and its exact scope).
+
+- **Daily ingest** (`scripts/10_daily_ingest.py`): fetches only the gap
+  between each ticker's last stored day and the previous complete UTC day —
+  bootstrapped once from the historical cache, never re-fetching years of
+  GDELT history. Supports `--backfill YYYY-MM-DD` for manual gap repair.
+- **Event recompute** (`scripts/11_daily_events.py`): reapplies the exact
+  same spike definition as the locked study over the full growing history,
+  writing to `data/live/events.csv` — a separate namespace from v0.1's
+  locked `data/events.csv`, never overwritten by it.
+- **Verdict-bounded scoring** (`scripts/06_scoring.py`): because the
+  recorded verdict is NULL, live events get an intensity score (news-volume
+  percentile against the *locked* historical distribution) and a novelty
+  score (days since that ticker's last event) — **never a forward-return
+  number**, enforced by an assertion, not just convention. The script
+  refuses to run under any other verdict rather than silently reinterpreting.
+- **Public site** (`scripts/12_build_site.py` → [live
+  site](https://vivektmurali.github.io/obscura-intel/)): a live feed,
+  per-ticker pages with price/event charts, and a methodology page, built
+  with Jinja2 + matplotlib (not React — keeps the pipeline Python-only) and
+  published via GitHub Pages. A freshness guard fails the build (rather than
+  publish a stale-looking-current site) if the price data is more than 4
+  days old.
+- **Orchestration**: `.github/workflows/daily.yml`, a GitHub Actions cron
+  (01:15 UTC) running ingest → events → scoring → site build → commit, plus
+  an optional Telegram alert (`scripts/13_alert.py`) on new events or
+  pipeline failure — inert until `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID`
+  secrets are configured.
 
 ## Why this project
 
@@ -184,6 +227,7 @@ demonstrates exactly the evaluation rigor those roles hire for.
 
 ```
 scripts/
+  # v0.1 study (HANDOVER.md phases) -- frozen, never rerun against new data
   00_smoke_gdelt.py      Phase 0: GDELT API smoke test
   01_coverage.py         Phase 1: universe + coverage audit
   02_events.py           Phase 2: tone fetch + event detection + headline sampling
@@ -191,9 +235,21 @@ scripts/
   04_event_study.py      Phase 4: market-model CARs
   05_inference.py        Phase 5: permutation null + verdict
   06_figures.py          Phase 6: report figures
+  # v1.0 live pipeline (ARCHITECTURE.md phases, override handover) -- runs daily
+  10_daily_ingest.py     Phase 5: incremental GDELT + price fetch (--backfill supported)
+  11_daily_events.py     Phase 5: recompute events over the live store
+  06_scoring.py          Phase 6: verdict-bounded scoring (NULL mode only)
+  12_build_site.py       Phase 7: static site generator
+  13_alert.py            Phase 8: optional Telegram alerts
 data/                    universe, events, coverage/integrity reports (raw/ gitignored)
+data/live/               live pipeline's growing store (parquet, committed -- see DECISIONS.md)
+data/live_events.csv     events newly detected in the most recent daily run
 results/                 car_by_event.csv, stats.json, null_distributions.csv, figures/
-HANDOVER.md              binding research design + standing execution rules
+site_src/                Jinja2 templates + CSS source for the live site
+docs/                    built site output, served by GitHub Pages
+.github/workflows/       daily.yml -- the live pipeline's cron
+HANDOVER.md              binding research design + standing execution rules (v0.1)
+ARCHITECTURE.md          post-v0.1 roadmap (v1.0) -- ban-list exceptions logged in PARKING.md
 PREREGISTRATION.md       locked design, committed before any event-price join
 DECISIONS.md             running log of every non-obvious implementation choice
 PARKING.md               out-of-scope ideas, parked until v0.1 shipped

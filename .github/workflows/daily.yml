@@ -26,3 +26,14 @@ jobs:
           git add data/live/ data/live_events.csv docs/
           git commit -m "data: $(date -u +%F) daily ingest" || echo "no changes"
           git push
+      - run: python scripts/13_alert.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      - name: Alert on failure
+        if: failure()
+        run: |
+          python scripts/13_alert.py --failure "Run failed: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

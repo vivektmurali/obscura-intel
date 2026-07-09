@@ -37,6 +37,9 @@ SURFACE = "#fcfcfb"
 ACCENT = "#c9822c"
 
 RECENT_EVENTS_LIMIT = 30
+# calendar days, not trading days -- 4 (not 3) so a routine Fri-close -> Mon-build
+# gap over a weekend doesn't trip the guard; still catches a genuine multi-day outage
+MAX_STALENESS_DAYS = 4
 
 
 def render_ticker_chart(ticker, prices_df, events_df, out_path):
@@ -81,6 +84,17 @@ def main():
     new_events = pd.read_csv(NEW_EVENTS_CSV, parse_dates=["event_date"]) if NEW_EVENTS_CSV.exists() else pd.DataFrame()
     prices = pd.read_parquet(LIVE_PRICES_PARQUET)
 
+    # freshness guard: fail the build (and therefore the commit/push step after it)
+    # rather than publish a site that looks current but is running on stale data.
+    # The prior successful build stays live on Pages until data catches up.
+    data_current_through = prices["date"].max().date()
+    staleness_days = (datetime.now(timezone.utc).date() - data_current_through).days
+    if staleness_days > MAX_STALENESS_DAYS:
+        print(f"FATAL: price data is {staleness_days} days stale (last: {data_current_through}, "
+              f"threshold: {MAX_STALENESS_DAYS}). Refusing to build -- investigate scripts/10_daily_ingest.py "
+              f"before publishing a site that looks current but isn't.")
+        sys.exit(1)
+
     sector_by_ticker = dict(zip(universe["ticker"], universe["sector"]))
     company_by_ticker = dict(zip(universe["ticker"], universe["company_name"]))
 
@@ -97,7 +111,7 @@ def main():
     env = Environment(loader=FileSystemLoader(str(SITE_SRC / "templates")), autoescape=True)
     build_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-    common = dict(build_time=build_time, verdict=verdict)
+    common = dict(build_time=build_time, verdict=verdict, data_current_through=data_current_through)
 
     # --- index.html ---
     events_sorted = events.sort_values("event_date", ascending=False)

@@ -8,6 +8,7 @@ First run bootstraps the live store from the existing historical raw cache
 (data/raw/*.json) rather than re-fetching years of GDELT history through the
 same rate-limited API. Every subsequent run is a small top-up.
 """
+import argparse
 import csv
 import json
 import sys
@@ -202,12 +203,25 @@ def update_prices(universe, target_date):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--backfill", metavar="YYYY-MM-DD",
+        help="Repair a gap by treating this date as the target instead of "
+             "yesterday (UTC). Fetches through this date for every ticker "
+             "whose store doesn't already reach it; safe to rerun.",
+    )
+    args = parser.parse_args()
+
     with open(UNIVERSE_CSV, encoding="utf-8") as f:
         universe = list(csv.DictReader(f))
 
-    now_utc = datetime.now(timezone.utc)
-    target_date = pd.Timestamp((now_utc - timedelta(days=1)).date())
-    print(f"=== Daily ingest run: target date (previous complete UTC day) = {target_date.date()} ===")
+    if args.backfill:
+        target_date = pd.Timestamp(args.backfill)
+        print(f"=== Backfill run: target date = {target_date.date()} ===")
+    else:
+        now_utc = datetime.now(timezone.utc)
+        target_date = pd.Timestamp((now_utc - timedelta(days=1)).date())
+        print(f"=== Daily ingest run: target date (previous complete UTC day) = {target_date.date()} ===")
 
     print("\n--- GDELT volume ---")
     vol_store = load_or_bootstrap(universe, "vol", VOL_PARQUET)
