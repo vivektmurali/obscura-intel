@@ -75,16 +75,26 @@ def call_with_retry(**params):
     return None
 
 
-def parse_timeline(data):
+def parse_timeline(data, kind):
+    """GDELT auto-selects bucket width by query span: daily buckets (T000000Z
+    only) for the multi-year historical pulls, sub-daily (observed: 15-min)
+    buckets for the live pipeline's short incremental-gap queries. Parse the
+    full timestamp rather than assuming midnight, and collapse to one row per
+    calendar day: sum raw article counts, average tone. Tone averaging is an
+    unweighted mean of per-bucket averages -- GDELT doesn't expose per-bucket
+    article counts to weight by -- so it's an approximation when buckets are
+    sub-daily; exact for the always-daily historical bootstrap path.
+    """
     if data is None:
         return pd.DataFrame(columns=["date", "value"])
     pts = (data.get("timeline") or [{}])[0].get("data", [])
     if not pts:
         return pd.DataFrame(columns=["date", "value"])
     df = pd.DataFrame(pts)
-    df["date"] = pd.to_datetime(df["date"].str.replace("T000000Z", ""), format="%Y%m%d")
+    df["date"] = pd.to_datetime(df["date"], format="%Y%m%dT%H%M%SZ").dt.normalize()
     df["value"] = df["value"].astype(float)
-    return df[["date", "value"]]
+    agg = "sum" if kind == "vol" else "mean"
+    return df.groupby("date", as_index=False)["value"].agg(agg)
 
 
 def bootstrap_gdelt_store(universe, kind, out_path):
@@ -99,7 +109,7 @@ def bootstrap_gdelt_store(universe, kind, out_path):
                 continue
             with open(f, encoding="utf-8") as fh:
                 data = json.load(fh)
-            parts.append(parse_timeline(data))
+            parts.append(parse_timeline(data, kind))
         if not parts:
             continue
         df = pd.concat(parts, ignore_index=True).drop_duplicates("date").sort_values("date")
@@ -133,7 +143,7 @@ def fetch_gap(ticker, query, kind, start_date, end_date):
     with open(cache_path, "w", encoding="utf-8") as f:
         json.dump(data, f)
     time.sleep(SLEEP_BETWEEN_CALLS)
-    return parse_timeline(data)
+    return parse_timeline(data, kind)
 
 
 def update_gdelt_series(universe, kind, store, target_date):
