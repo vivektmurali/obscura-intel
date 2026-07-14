@@ -37,7 +37,7 @@ BASE = "https://api.gdeltproject.org/api/v2/doc/doc"
 BENCHMARK = "^NSEI"
 HIST_YEARS = [2023, 2024, 2025]
 SLEEP_BETWEEN_CALLS = 25
-MAX_ATTEMPTS = 6
+MAX_ATTEMPTS = 3
 TIMEOUT = 90
 PRICE_LOOKBACK_DAYS = 10  # re-fetch a small trailing window to catch corrections
 
