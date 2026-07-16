@@ -36,6 +36,22 @@ POWER_LEVELS = [0.5, 0.8, 0.9]
 BENCHMARK_EFFECTS = [0.005, 0.01, 0.015, 0.02, 0.03]
 
 
+def compute_mde(se, z_alpha, power_levels):
+    """Minimum detectable effect at each power level, given a standard error."""
+    return {
+        f"{int(p * 100)}pct": (z_alpha + stats.norm.ppf(p)) * se
+        for p in power_levels
+    }
+
+
+def compute_achieved_power(se, z_alpha, benchmark_effects):
+    """Achieved power to detect each benchmark effect size, given a standard error."""
+    return {
+        f"{effect * 100:.1f}pct": float(stats.norm.cdf(effect / se - z_alpha))
+        for effect in benchmark_effects
+    }
+
+
 def main():
     car = pd.read_csv(CAR_CSV, parse_dates=["event_date", "entry_date"])
     null_df = pd.read_csv(NULL_CSV)
@@ -47,32 +63,33 @@ def main():
     n = len(x)
 
     # cross-check against the locked primary result -- this script must never
-    # silently diverge from what 05_inference.py already found and recorded
+    # silently diverge from what 05_inference.py already found and recorded.
+    # An explicit check, not a bare `assert`: assertions are stripped entirely
+    # under `python -O`/PYTHONOPTIMIZE, which would silently disable this
+    # staleness guard (found in code review, 2026-07-16).
     observed = x.mean()
-    assert abs(observed - stats_json["primary"]["observed"]) < 1e-9, (
-        "observed T5 statistic recomputed here does not match the locked stats.json -- "
-        "do not proceed, results/car_by_event.csv may be stale relative to stats.json"
-    )
+    if abs(observed - stats_json["primary"]["observed"]) >= 1e-9:
+        raise ValueError(
+            "observed T5 statistic recomputed here does not match the locked stats.json -- "
+            "do not proceed, results/car_by_event.csv may be stale relative to stats.json"
+        )
 
     se_empirical = null_df["T5"].std(ddof=1)
     se_parametric = x.std(ddof=1) / np.sqrt(n)
     z_alpha = stats.norm.ppf(1 - ALPHA)
 
-    mde = {}
-    for se_label, se in [("empirical_permutation_null", se_empirical),
-                          ("parametric_sample_se", se_parametric)]:
-        mde[se_label] = {
-            "se": se,
-            "mde_by_power": {
-                f"{int(p * 100)}pct": (z_alpha + stats.norm.ppf(p)) * se
-                for p in POWER_LEVELS
-            },
-        }
-
-    achieved_power = {
-        f"{effect * 100:.1f}pct": float(stats.norm.cdf(effect / se_empirical - z_alpha))
-        for effect in BENCHMARK_EFFECTS
+    mde = {
+        "empirical_permutation_null": {
+            "se": se_empirical,
+            "mde_by_power": compute_mde(se_empirical, z_alpha, POWER_LEVELS),
+        },
+        "parametric_sample_se": {
+            "se": se_parametric,
+            "mde_by_power": compute_mde(se_parametric, z_alpha, POWER_LEVELS),
+        },
     }
+
+    achieved_power = compute_achieved_power(se_empirical, z_alpha, BENCHMARK_EFFECTS)
 
     results = {
         "n_events": n,

@@ -1,0 +1,9 @@
+{
+  "primary": {
+    "statistic": "mean(sign(tone_z) x CAR_t5)",
+    "observed": 0.5,
+    "p_value": 0.123,
+    "pass": false,
+    "threshold": 0.05
+  }
+}
