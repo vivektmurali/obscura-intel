@@ -1,0 +1,28 @@
+{
+  "source_path": "c:\\Users\\tvive\\Documents\\Python Scripts\\obscura_p2\\PREREGISTRATION.md",
+  "type": "ADR",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "Pre-registration — Obscura Intel v0.1 event study",
+  "summary": "Pre-registered event-study methodology (universe, event definition, entry rule, returns model, hypotheses, robustness plan, kill criterion) committed before joining event data to price data.",
+  "scope": [
+    "event study methodology",
+    "NSE ticker universe",
+    "GDELT event detection (vol_z, tone_z)",
+    "entry/return calculation (market model, CAR)",
+    "primary and secondary hypotheses",
+    "permutation test",
+    "robustness checks",
+    "kill criterion",
+    "sample-size gate",
+    "event clustering caveat"
+  ],
+  "cross_refs": [
+    "data/universe.csv",
+    "DECISIONS.md",
+    "data/events.csv"
+  ],
+  "locked": false,
+  "precedence": 0,
+  "notes": "MANIFEST_TYPE declared this ADR and was treated as authoritative per process. Content itself does not follow ADR conventions (no Context/Decision/Consequences sections, no explicit Status field) -- it is structurally a pre-registered analysis protocol/methodology commitment for a statistical study, closer to a locked specification than an architectural decision. Document language ('Committed before any join of event data...', gate-pass results already recorded) suggests it functions as a de facto locked commitment, but absent an explicit 'Status: Accepted' marker, locked was conservatively left false per taxonomy rule. Synthesizer should treat this as a high-precedence locked-methodology source regardless of the strict ADR/locked field values."
+}

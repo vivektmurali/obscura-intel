@@ -1,0 +1,34 @@
+{
+  "source_path": "c:\\Users\\tvive\\Documents\\Python Scripts\\obscura_p2\\DECISIONS.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "Decisions log",
+  "summary": "Chronological log of autonomous implementation decisions across all project phases, per CLAUDE.md rule 5.",
+  "scope": [
+    "GDELT ingestion",
+    "universe selection",
+    "coverage gate",
+    "event detection",
+    "price data (yfinance)",
+    "event study / CAR computation",
+    "permutation inference",
+    "daily live pipeline",
+    "NULL-mode scoring",
+    "public site build (GitHub Pages)",
+    "regression test suite",
+    "power/MDE analysis",
+    "production bug fixes (parse_timeline, retry backoff, phantom-day boundary)"
+  ],
+  "cross_refs": [
+    "HANDOVER.md",
+    "ARCHITECTURE.md",
+    "PARKING.md",
+    "PREREGISTRATION.md",
+    "README.md",
+    "CLAUDE.md"
+  ],
+  "locked": false,
+  "precedence": 3,
+  "notes": ""
+}

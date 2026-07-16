@@ -1,0 +1,33 @@
+{
+  "source_path": "c:\\Users\\tvive\\Documents\\Python Scripts\\obscura_p2\\ARCHITECTURE.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "OBSCURA INTEL — SYSTEM ARCHITECTURE & SHIPPING ROADMAP (v1.0)",
+  "summary": "System architecture, data flow, stack, repo layout, and phased shipping roadmap for the Obscura Intel event-driven market intelligence pipeline.",
+  "scope": [
+    "GDELT DOC 2.0 API",
+    "yfinance price ingestion",
+    "GitHub Actions cron pipeline",
+    "parquet/raw JSON data store",
+    "event engine (spike detection)",
+    "validation core (event study, permutation null, FDR)",
+    "live scoring layer",
+    "static site build",
+    "GitHub Pages hosting",
+    "Telegram alerts",
+    "LLM enrichment module",
+    "phase roadmap and gates"
+  ],
+  "cross_refs": [
+    "HANDOVER.md",
+    "PREREGISTRATION.md",
+    "DECISIONS.md",
+    "PARKING.md",
+    "README.md",
+    "CLAUDE.md"
+  ],
+  "locked": false,
+  "precedence": 1,
+  "notes": ""
+}
