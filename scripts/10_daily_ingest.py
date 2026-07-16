@@ -143,7 +143,16 @@ def fetch_gap(ticker, query, kind, start_date, end_date):
     with open(cache_path, "w", encoding="utf-8") as f:
         json.dump(data, f)
     time.sleep(SLEEP_BETWEEN_CALLS)
-    return parse_timeline(data, kind)
+    df = parse_timeline(data, kind)
+    # GDELT's enddatetime boundary is inclusive (confirmed empirically), so a
+    # query for [start_date, end_date) actually returns one extra bucket
+    # exactly at end_date's midnight. Left unfiltered, that single-instant
+    # bucket becomes a full (near-meaningless) row for end_date after
+    # parse_timeline's groupby, which then poisons update_gdelt_series's gap
+    # tracking -- end_date looks "already covered" and its real data is never
+    # fetched. This contract (end_date exclusive) belongs to fetch_gap, not
+    # to parse_timeline, which is shared with the historical bootstrap path.
+    return df[df["date"] < end_date].reset_index(drop=True)
 
 
 def update_gdelt_series(universe, kind, store, target_date):

@@ -1,10 +1,13 @@
 """Regression tests for scripts/10_daily_ingest.py.
 
-Covers the two subsystems that have already broken in production once each:
+Covers the subsystems that have already broken in production:
 - parse_timeline's date parsing/aggregation (crashed on GDELT's sub-daily
   buckets, 2026-07-11 -- see DECISIONS.md).
 - call_with_retry's backoff behavior (retuned 2026-07-14 after runtime grew
   to 4-6h under GDELT rate-limiting -- see DECISIONS.md).
+- fetch_gap's end-date boundary (GDELT's enddatetime is inclusive, creating
+  a phantom next-day row that silently corrupted live tickers -- found and
+  fixed 2026-07-16 -- see DECISIONS.md).
 
 Fixtures under tests/fixtures/ are trimmed slices or full copies of real,
 previously-cached GDELT API responses (data/raw/, data/live/raw/) -- never
@@ -12,11 +15,14 @@ fabricated, per CLAUDE.md rule 3.
 """
 import importlib.util
 import json
+import shutil
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+import pandas as pd
 import requests
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -161,6 +167,48 @@ class CallWithRetryTests(unittest.TestCase):
             daily_ingest.call_with_retry(query="x", mode="timelinevolraw")
         waited = [call.args[0] for call in self.mock_sleep.call_args_list]
         self.assertEqual(waited, [30 * (i + 1) for i in range(daily_ingest.MAX_ATTEMPTS)])
+
+
+class FetchGapBoundaryTests(unittest.TestCase):
+    """Regression for the 2026-07-16 phantom-day bug: GDELT's enddatetime
+    boundary is inclusive, so a query for [start_date, end_date) actually
+    returns data through end_date's exact midnight. fetch_gap documents
+    "end_date exclusive" as its own contract, so it -- not parse_timeline,
+    which is shared with the historical bootstrap path -- must be the one
+    to drop that boundary row. Left unfiltered, update_gdelt_series would
+    mistake end_date for an already-covered day and never fetch its real
+    data (confirmed live: BIOCON's committed store was frozen at exactly
+    this kind of phantom day before the fix)."""
+
+    def setUp(self):
+        self.sleep_patcher = patch("time.sleep")
+        self.sleep_patcher.start()
+        self.addCleanup(self.sleep_patcher.stop)
+        # fetch_gap writes a raw-response cache file as a side effect;
+        # redirect it to a throwaway dir so tests don't write into the
+        # real data/live/raw/ cache.
+        self.tmp_raw_dir = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp_raw_dir, True)
+        self.raw_dir_patcher = patch.object(daily_ingest, "LIVE_RAW_DIR", self.tmp_raw_dir)
+        self.raw_dir_patcher.start()
+        self.addCleanup(self.raw_dir_patcher.stop)
+
+    def test_boundary_instant_at_end_date_is_excluded(self):
+        # real capture: query was [2026-07-10, 2026-07-14), GDELT returned
+        # hourly buckets through 2026-07-14T000000Z inclusive -- the exact
+        # scenario that silently corrupted BIOCON's live store.
+        data = load_fixture("live_subdaily_multiday_biocon_vol.json")
+        with patch("requests.get", return_value=_resp(200, data)):
+            df = daily_ingest.fetch_gap(
+                "BIOCON", "query", "vol",
+                pd.Timestamp("2026-07-10"), pd.Timestamp("2026-07-14"),
+            )
+        self.assertEqual(len(df), 4)
+        self.assertNotIn(pd.Timestamp("2026-07-14"), list(df["date"]))
+        self.assertEqual(
+            sorted(str(d.date()) for d in df["date"]),
+            ["2026-07-10", "2026-07-11", "2026-07-12", "2026-07-13"],
+        )
 
 
 if __name__ == "__main__":
