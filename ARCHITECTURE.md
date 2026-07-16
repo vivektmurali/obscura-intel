@@ -12,7 +12,7 @@
 v1.0 is shipped when every box is checked:
 
 - [ ] Public URL (GitHub Pages) showing a **live event feed**, per-ticker pages, and a methodology page — updating daily with real data.
-- [ ] Pipeline runs **fully unattended** on GitHub Actions cron: no laptop, no manual step. Proof: 14 consecutive unattended daily runs in the Actions log.
+- [ ] Pipeline runs **fully unattended** on GitHub Actions cron: no laptop, no manual step. Proof: 14 consecutive unattended daily runs in the Actions log. **"Consecutive" means an unbroken streak — any scheduled run that fails (for any reason, including third-party rate-limiting outside this project's control) resets the count to zero from the next scheduled success.** Not a rolling window over some fixed calendar period. See DECISIONS.md for the running count and each reset's cause.
 - [ ] Every number on the site is traceable to a cached raw API response (provenance rule, §3).
 - [ ] Validation results published **whichever way they came out**, citing the pre-registration commit hash.
 - [ ] Claims audit passed: no statement on the site exceeds what validation supports (§7).

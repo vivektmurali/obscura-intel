@@ -101,6 +101,21 @@ exactly 3 tickers/day, never exceeding the >3 threshold, so there was nothing
 to drop. A market-adjusted-returns comparison lands at p = 0.833. Neither
 changes the conclusion.
 
+**Is this null result underpowered, or genuinely null?** A retroactive
+post-hoc power/MDE calculation (`scripts/07_power_analysis.py`,
+[`results/power_analysis.json`](results/power_analysis.json) — computed after
+the verdict, using only the permutation null's own spread, not a
+respecification of the test or a change to the kill criterion) answers this
+directly: at n = 242 events, the primary test had **~72% power to detect a
+tone-signed CAR_t5 effect as small as 0.5%**, and **>99.8% power for anything
+≥1%** — the minimum detectable effect at 80% power is 0.56%. This is a
+well-powered null against any economically plausible effect size for a 5-day
+window, not a "couldn't tell" result. (Caveat: this assumes independence
+across events; the cross-sectional clustering already disclosed above would
+inflate the true standard error, making this MDE optimistic rather than
+pessimistic — consistent with disclosing limitations honestly rather than
+overstating them.)
+
 **Verdict, per the pre-registered kill criterion (`PREREGISTRATION.md`):
 "no detectable edge under this specification."** No respecification is
 permitted now that results have been seen — this stands as the answer. Full
@@ -158,6 +173,15 @@ rather than reading tea leaves from individual cases.
   fetch failures across three retry passes, including one where they were
   fetched first and in isolation — ruling out simple rate-limit queue
   position as the cause. Root cause undetermined; see `DECISIONS.md`.
+- **Data provenance**: the event/tone signals published here (both v0.1's
+  study and the live pipeline) are derived from GDELT's aggregation of
+  public news coverage, which frequently concerns identifiable people
+  (executives, promoters) alongside companies. Nothing here is scraped
+  beyond GDELT's own API or redistributed as raw article text, and GDELT is
+  designed for exactly this kind of aggregate use — but the site does
+  republish tone/volume signals tied to named individuals and companies
+  under the author's name, which is worth stating plainly rather than
+  leaving implicit.
 
 ## What v0.2 would test
 
@@ -188,6 +212,13 @@ one phase at a time (see `PARKING.md` for each override and its exact scope).
   between each ticker's last stored day and the previous complete UTC day —
   bootstrapped once from the historical cache, never re-fetching years of
   GDELT history. Supports `--backfill YYYY-MM-DD` for manual gap repair.
+  GDELT rate-limits this pipeline hard and unpredictably (up to several
+  hours of retry backoff on a bad day, purely third-party throttling, not a
+  bug); `MAX_ATTEMPTS` is tuned to keep worst-case runtime well under GitHub
+  Actions' 6-hour job timeout rather than retrying indefinitely — tickers
+  that still exhaust retries simply keep their gap open and get retried the
+  next day (recompute-over-append self-heals). See `DECISIONS.md` for the
+  incident history.
 - **Event recompute** (`scripts/11_daily_events.py`): reapplies the exact
   same spike definition as the locked study over the full growing history,
   writing to `data/live/events.csv` — a separate namespace from v0.1's
@@ -235,6 +266,7 @@ scripts/
   04_event_study.py      Phase 4: market-model CARs
   05_inference.py        Phase 5: permutation null + verdict
   06_figures.py          Phase 6: report figures
+  07_power_analysis.py   post-hoc power/MDE analysis (retroactive addendum, see DECISIONS.md)
   # v1.0 live pipeline (ARCHITECTURE.md phases, override handover) -- runs daily
   10_daily_ingest.py     Phase 5: incremental GDELT + price fetch (--backfill supported)
   11_daily_events.py     Phase 5: recompute events over the live store
@@ -244,7 +276,7 @@ scripts/
 data/                    universe, events, coverage/integrity reports (raw/ gitignored)
 data/live/               live pipeline's growing store (parquet, committed -- see DECISIONS.md)
 data/live_events.csv     events newly detected in the most recent daily run
-results/                 car_by_event.csv, stats.json, null_distributions.csv, figures/
+results/                 car_by_event.csv, stats.json, null_distributions.csv, power_analysis.json, figures/
 site_src/                Jinja2 templates + CSS source for the live site
 docs/                    built site output, served by GitHub Pages
 .github/workflows/       daily.yml -- the live pipeline's cron

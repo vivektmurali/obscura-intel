@@ -1,0 +1,32 @@
+{
+  "n_events": 242,
+  "observed_primary_statistic": -0.0015110979473717564,
+  "p_value_primary": 0.7632367632367633,
+  "alpha_one_sided": 0.05,
+  "mde": {
+    "empirical_permutation_null": {
+      "se": 0.0022444909200495466,
+      "mde_by_power": {
+        "50pct": 0.0036918590305031434,
+        "80pct": 0.0055808702473784475,
+        "90pct": 0.00656828988294328
+      }
+    },
+    "parametric_sample_se": {
+      "se": 0.0024066743424110016,
+      "mde_by_power": {
+        "50pct": 0.003958627021005785,
+        "80pct": 0.0059841352498740145,
+        "90pct": 0.007042904292278626
+      }
+    }
+  },
+  "achieved_power_at_benchmark_effects": {
+    "0.5pct": 0.7199937756861898,
+    "1.0pct": 0.9975267679461302,
+    "1.5pct": 0.9999997650057846,
+    "2.0pct": 0.9999999999998147,
+    "3.0pct": 1.0
+  },
+  "note": "MDE/power computed for the primary test only (mean(sign(tone_z) x CAR_t5), one-sided alpha=0.05), using the permutation null's own empirical standard deviation as the primary SE estimate (matches the test actually run) and a parametric std/sqrt(n) estimate as a cross-check. Both assume independence across events; cross-sectional event clustering (HANDOVER.md Sec 4.7) would inflate the true SE and so make this MDE optimistic, not pessimistic -- consistent with the rest of this project's honesty-over-momentum stance."
+}
