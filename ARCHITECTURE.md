@@ -16,8 +16,8 @@ v1.0 is shipped when every box is checked:
 - [ ] Every number on the site is traceable to a cached raw API response (provenance rule, §3).
 - [ ] Validation results published **whichever way they came out**, citing the pre-registration commit hash.
 - [ ] Claims audit passed: no statement on the site exceeds what validation supports (§7).
-- [ ] README is the flagship writeup; repo tagged `v1.0` and pinned on the GitHub profile.
-- [ ] Sent to ≥3 real humans, at least one technical. Shipping includes an audience.
+- [ ] README is the flagship writeup; repo tagged `v1.0` and pinned on the GitHub profile. **Tagging waits for the 14-run gate above** — the tag is specifically the "pipeline proven unattended" milestone.
+- [ ] Sent to ≥3 real humans, at least one technical. Shipping includes an audience. **Decoupled from the 14-run gate (decided 2026-07-16, see DECISIONS.md)** — the study and site content have been complete and honest since the NULL verdict locked; outreach doesn't need to wait on an ops-reliability metric that has nothing to do with whether the analysis is sound. Send whenever ready; the run count keeps climbing in the background toward the `v1.0` tag regardless.
 
 Not shipped: anything running in a notebook, behind a tunnel, on localhost, or requiring Vivek to remember to run it.
 
