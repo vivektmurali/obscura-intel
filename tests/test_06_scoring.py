@@ -126,5 +126,47 @@ class MainVerdictGuardTests(unittest.TestCase):
                 self.assertEqual(ctx.exception.code, 1)
 
 
+class ComputeTercileReferenceTests(unittest.TestCase):
+    """Cross-checked against 06_figures.py's fig_tone_tercile, which already
+    plots these exact numbers in results/figures/tone_tercile.png -- this
+    proves the two independent qcut calls agree, not just that this one runs."""
+
+    def test_matches_locked_figure_numbers(self):
+        ref = scoring.compute_tercile_reference()
+        self.assertAlmostEqual(ref["edges"][0], -12.440962071362412)
+        self.assertAlmostEqual(ref["edges"][1], -0.060992862151788604)
+        self.assertAlmostEqual(ref["edges"][2], 0.4781734963545042)
+        self.assertAlmostEqual(ref["edges"][3], 3.8686705437924407)
+        self.assertAlmostEqual(ref["mean"]["bottom"], 0.006125822605787347)
+        self.assertAlmostEqual(ref["mean"]["mid"], -0.00048690668795241357)
+        self.assertAlmostEqual(ref["mean"]["top"], 0.0031365360141517398)
+        self.assertEqual(ref["n"]["bottom"], 81)
+        self.assertEqual(ref["n"]["mid"], 80)
+        self.assertEqual(ref["n"]["top"], 81)
+
+
+class ClassifyTercileTests(unittest.TestCase):
+    EDGES = [-12.440962071362412, -0.060992862151788604, 0.4781734963545042, 3.8686705437924407]
+
+    def test_value_inside_bottom_tercile(self):
+        self.assertEqual(scoring.classify_tercile(-1.0, self.EDGES), "bottom")
+
+    def test_value_inside_mid_tercile(self):
+        self.assertEqual(scoring.classify_tercile(0.1, self.EDGES), "mid")
+
+    def test_value_inside_top_tercile(self):
+        self.assertEqual(scoring.classify_tercile(1.0, self.EDGES), "top")
+
+    def test_value_more_negative_than_locked_minimum_clips_to_bottom(self):
+        self.assertEqual(scoring.classify_tercile(-50.0, self.EDGES), "bottom")
+
+    def test_value_more_positive_than_locked_maximum_clips_to_top(self):
+        self.assertEqual(scoring.classify_tercile(50.0, self.EDGES), "top")
+
+    def test_exact_boundary_values(self):
+        self.assertEqual(scoring.classify_tercile(-0.060992862151788604, self.EDGES), "bottom")
+        self.assertEqual(scoring.classify_tercile(0.4781734963545042, self.EDGES), "mid")
+
+
 if __name__ == "__main__":
     unittest.main()

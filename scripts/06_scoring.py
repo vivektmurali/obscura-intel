@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parent.parent
 STATS_JSON = ROOT / "results" / "stats.json"
 HISTORICAL_EVENTS_CSV = ROOT / "data" / "events.csv"  # v0.1's locked reference distribution
 LIVE_EVENTS_CSV = ROOT / "data" / "live" / "events.csv"
+CAR_BY_EVENT_CSV = ROOT / "results" / "car_by_event.csv"  # v0.1's locked event-level CAR table
 NEW_EVENTS_CSV = ROOT / "data" / "live_events.csv"
 
 FORBIDDEN_NULL_MODE_COLUMNS = {"CAR_t1", "CAR_t5", "CAR_t20", "car_t1", "car_t5", "car_t20"}
@@ -38,6 +39,38 @@ def get_verdict():
 def score_intensity(vol_z_values, reference_vol_z):
     """Percentile rank of each vol_z against the locked historical distribution."""
     return np.array([stats.percentileofscore(reference_vol_z, v, kind="rank") for v in vol_z_values])
+
+
+def compute_tercile_reference():
+    """Locked tone_z tercile cutpoints + per-tercile mean CAR_t5, recomputed
+    fresh from the locked results/car_by_event.csv every run (242 rows,
+    sub-second) -- identical qcut call to 06_figures.py's fig_tone_tercile,
+    so there is exactly one implementation of "what a tercile is"."""
+    car = pd.read_csv(CAR_BY_EVENT_CSV)
+    valid = car.dropna(subset=["CAR_t5"]).copy()
+    tercile, edges = pd.qcut(valid["tone_z"], 3, labels=["bottom", "mid", "top"], retbins=True)
+    valid["tercile"] = tercile
+    grouped = valid.groupby("tercile", observed=True)["CAR_t5"]
+    means = grouped.mean()
+    ns = grouped.size()
+    return {
+        "edges": edges.tolist(),
+        "mean": {label: float(means[label]) for label in ["bottom", "mid", "top"]},
+        "n": {label: int(ns[label]) for label in ["bottom", "mid", "top"]},
+    }
+
+
+def classify_tercile(tone_z, edges):
+    """Classify a tone_z value into the locked bottom/mid/top tercile. Values
+    more extreme than the locked distribution's own min/max simply fall into
+    the nearest tercile (bottom or top) rather than erroring -- there is no
+    fourth bucket for "more extreme than anything seen historically"."""
+    _, e1, e2, _ = edges
+    if tone_z <= e1:
+        return "bottom"
+    if tone_z <= e2:
+        return "mid"
+    return "top"
 
 
 def score_novelty(df):
