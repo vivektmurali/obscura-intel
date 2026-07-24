@@ -1,2 +1,2 @@
-ticker,event_date,v,vol_z,tone,tone_z,direction,intensity_percentile,novelty_days
-NHPC,2026-07-22,6.0,4.956956416527803,-0.2758023529411764,-0.2127991478747433,-1.0,54.13223140495868,14.0
+ticker,event_date,v,vol_z,tone,tone_z,direction,intensity_percentile,novelty_days,tercile_label,tercile_mean_car5,tercile_n,calibration_disclaimer
+NHPC,2026-07-22,6.0,4.956956416527803,-0.2758023529411764,-0.2127991478747433,-1.0,54.13223140495868,14.0,bottom,0.006125822605787347,81,Historical average across similarly-toned events in the locked study -- not a prediction. The primary test found no statistically significant relationship between tone and forward returns (permutation p=0.763). Not a trading signal.

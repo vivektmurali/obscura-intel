@@ -138,26 +138,35 @@ def main():
         sys.exit(1)
 
     reference = pd.read_csv(HISTORICAL_EVENTS_CSV)["vol_z"].to_numpy()
+    tercile_ref = compute_tercile_reference()
 
     live_events = pd.read_csv(LIVE_EVENTS_CSV, parse_dates=["event_date"])
+    live_events = score_calibration(live_events, tercile_ref)
     scored_live = score_null_mode(live_events, reference)
     scored_live.to_csv(LIVE_EVENTS_CSV, index=False)
     print(f"Scored {len(scored_live)} events in {LIVE_EVENTS_CSV} "
-          f"(columns added: intensity_percentile, novelty_days)")
+          f"(columns added: intensity_percentile, novelty_days, tercile_label, "
+          f"tercile_mean_car5, tercile_n, calibration_disclaimer)")
 
+    calibration_cols = ["tercile_label", "tercile_mean_car5", "tercile_n", "calibration_disclaimer"]
     if NEW_EVENTS_CSV.exists():
         new_events = pd.read_csv(NEW_EVENTS_CSV, parse_dates=["event_date"])
         if len(new_events):
-            # pull the already-computed scores for these specific (ticker, event_date) rows
             merged = new_events[["ticker", "event_date"]].merge(
-                scored_live[["ticker", "event_date", "intensity_percentile", "novelty_days"]],
+                scored_live[["ticker", "event_date", "intensity_percentile", "novelty_days"] + calibration_cols],
                 on=["ticker", "event_date"], how="left",
             )
             new_events["intensity_percentile"] = merged["intensity_percentile"].to_numpy()
             new_events["novelty_days"] = merged["novelty_days"].to_numpy()
+            for col in calibration_cols:
+                new_events[col] = merged[col].to_numpy()
         else:
             new_events["intensity_percentile"] = pd.Series(dtype=float)
             new_events["novelty_days"] = pd.Series(dtype=float)
+            new_events["tercile_label"] = pd.Series(dtype=object)
+            new_events["tercile_mean_car5"] = pd.Series(dtype=float)
+            new_events["tercile_n"] = pd.Series(dtype="Int64")
+            new_events["calibration_disclaimer"] = pd.Series(dtype=object)
         new_events.to_csv(NEW_EVENTS_CSV, index=False)
         print(f"Scored {len(new_events)} new-this-run events in {NEW_EVENTS_CSV}")
 
