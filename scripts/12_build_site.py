@@ -153,6 +153,10 @@ def main():
             event_date=r["event_date"].date(), direction=r["direction"],
             intensity_percentile=round(r["intensity_percentile"], 1),
             novelty_days=None if pd.isna(r["novelty_days"]) else int(r["novelty_days"]),
+            tercile_label=r["tercile_label"],
+            tercile_mean_car5_pct=round(r["tercile_mean_car5"] * 100, 2),
+            tercile_n=int(r["tercile_n"]),
+            calibration_disclaimer=r["calibration_disclaimer"],
         ) for _, r in ev_rows.iterrows()]
         max_intensity = round(ev_rows["intensity_percentile"].max(), 1) if len(ev_rows) else "—"
         (OUT_DIR / "tickers" / f"{ticker}.html").write_text(tpl.render(
