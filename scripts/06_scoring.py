@@ -65,6 +65,10 @@ def classify_tercile(tone_z, edges):
     more extreme than the locked distribution's own min/max simply fall into
     the nearest tercile (bottom or top) rather than erroring -- there is no
     fourth bucket for "more extreme than anything seen historically"."""
+    if pd.isna(tone_z):
+        raise ValueError(
+            "classify_tercile received a NaN tone_z — cannot classify a missing value into a tercile"
+        )
     _, e1, e2, _ = edges
     if tone_z <= e1:
         return "bottom"

@@ -200,6 +200,11 @@ class ClassifyTercileTests(unittest.TestCase):
         self.assertEqual(scoring.classify_tercile(-0.060992862151788604, self.EDGES), "bottom")
         self.assertEqual(scoring.classify_tercile(0.4781734963545042, self.EDGES), "mid")
 
+    def test_nan_tone_z_raises_value_error(self):
+        with self.assertRaises(ValueError) as ctx:
+            scoring.classify_tercile(float('nan'), self.EDGES)
+        self.assertIn("NaN", str(ctx.exception))
+
 
 class ScoreCalibrationTests(unittest.TestCase):
     TERCILE_REF = {
