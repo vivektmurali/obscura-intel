@@ -108,6 +108,39 @@ class ScoreNullModeClaimsAuditTests(unittest.TestCase):
         self.assertNotIn("CAR_t5", result.columns)
 
 
+class ScoreNullModeCalibrationAuditTests(unittest.TestCase):
+    """Widens the same claims-audit guarantee: a historical-calibration
+    number must never reach the site without its non-predictive disclaimer."""
+
+    def _base_df(self):
+        return pd.DataFrame({
+            "ticker": ["DABUR"],
+            "event_date": pd.to_datetime(["2023-05-04"]),
+            "vol_z": [5.0],
+        })
+
+    def test_raises_when_tercile_mean_present_without_disclaimer(self):
+        df = self._base_df()
+        df["tercile_mean_car5"] = [0.006]
+        with self.assertRaises(ValueError) as ctx:
+            scoring.score_null_mode(df, [3.0, 5.0, 7.0])
+        self.assertIn("disclaimer", str(ctx.exception).lower())
+
+    def test_raises_when_disclaimer_text_is_wrong(self):
+        df = self._base_df()
+        df["tercile_mean_car5"] = [0.006]
+        df["calibration_disclaimer"] = ["this text has been edited and no longer matches"]
+        with self.assertRaises(ValueError):
+            scoring.score_null_mode(df, [3.0, 5.0, 7.0])
+
+    def test_succeeds_when_disclaimer_is_present_and_correct(self):
+        df = self._base_df()
+        df["tercile_mean_car5"] = [0.006]
+        df["calibration_disclaimer"] = [scoring.CALIBRATION_DISCLAIMER]
+        result = scoring.score_null_mode(df, [3.0, 5.0, 7.0])
+        self.assertIn("intensity_percentile", result.columns)
+
+
 class MainVerdictGuardTests(unittest.TestCase):
     """main() must refuse to run in any non-NULL verdict, before touching
     any live-events file -- SIGNAL-mode scoring isn't implemented."""

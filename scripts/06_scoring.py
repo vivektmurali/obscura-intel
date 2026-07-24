@@ -108,6 +108,17 @@ def score_null_mode(df, reference_vol_z):
         "NULL-mode claims audit failed: a forward-return column is present. "
         "Per ARCHITECTURE.md Sec 7, NULL verdict must never show or imply forward returns."
     )
+    if "tercile_mean_car5" in df.columns:
+        disclaimer_ok = (
+            "calibration_disclaimer" in df.columns
+            and (df["calibration_disclaimer"] == CALIBRATION_DISCLAIMER).all()
+        )
+        if not disclaimer_ok:
+            raise ValueError(
+                "Claims audit failed: tercile_mean_car5 is present without the exact "
+                "required calibration disclaimer on every row. A historical-calibration "
+                "number must never reach the site without its non-predictive disclaimer."
+            )
     df = score_novelty(df)
     df["intensity_percentile"] = score_intensity(df["vol_z"].to_numpy(), reference_vol_z)
     return df
