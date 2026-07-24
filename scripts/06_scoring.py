@@ -73,6 +73,29 @@ def classify_tercile(tone_z, edges):
     return "top"
 
 
+CALIBRATION_DISCLAIMER = (
+    "Historical average across similarly-toned events in the locked study "
+    "-- not a prediction. The primary test found no statistically "
+    "significant relationship between tone and forward returns "
+    "(permutation p=0.763). Not a trading signal."
+)
+
+
+def score_calibration(df, tercile_ref):
+    """Attach the historical-calibration fields (tercile_label,
+    tercile_mean_car5, tercile_n, calibration_disclaimer) to every row.
+    These are historical *group* averages from the locked study, never a
+    per-event forward-return number -- score_null_mode's claims-audit
+    assertion enforces the disclaimer travels with tercile_mean_car5."""
+    df = df.copy()
+    edges = tercile_ref["edges"]
+    df["tercile_label"] = df["tone_z"].apply(lambda z: classify_tercile(z, edges))
+    df["tercile_mean_car5"] = df["tercile_label"].map(tercile_ref["mean"])
+    df["tercile_n"] = df["tercile_label"].map(tercile_ref["n"])
+    df["calibration_disclaimer"] = CALIBRATION_DISCLAIMER
+    return df
+
+
 def score_novelty(df):
     """Days since this ticker's previous event, within the same (sorted) table."""
     df = df.sort_values(["ticker", "event_date"]).copy()

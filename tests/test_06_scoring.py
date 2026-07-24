@@ -168,5 +168,26 @@ class ClassifyTercileTests(unittest.TestCase):
         self.assertEqual(scoring.classify_tercile(0.4781734963545042, self.EDGES), "mid")
 
 
+class ScoreCalibrationTests(unittest.TestCase):
+    TERCILE_REF = {
+        "edges": [-12.440962071362412, -0.060992862151788604, 0.4781734963545042, 3.8686705437924407],
+        "mean": {"bottom": 0.006125822605787347, "mid": -0.00048690668795241357, "top": 0.0031365360141517398},
+        "n": {"bottom": 81, "mid": 80, "top": 81},
+    }
+
+    def test_attaches_all_four_fields(self):
+        df = pd.DataFrame({"tone_z": [-1.0, 0.1, 1.0]})
+        result = scoring.score_calibration(df, self.TERCILE_REF)
+        self.assertEqual(result["tercile_label"].tolist(), ["bottom", "mid", "top"])
+        self.assertAlmostEqual(result["tercile_mean_car5"].iloc[0], 0.006125822605787347)
+        self.assertEqual(result["tercile_n"].tolist(), [81, 80, 81])
+        self.assertTrue((result["calibration_disclaimer"] == scoring.CALIBRATION_DISCLAIMER).all())
+
+    def test_never_adds_a_forward_return_column(self):
+        df = pd.DataFrame({"tone_z": [-1.0]})
+        result = scoring.score_calibration(df, self.TERCILE_REF)
+        self.assertFalse(scoring.FORBIDDEN_NULL_MODE_COLUMNS & set(result.columns))
+
+
 if __name__ == "__main__":
     unittest.main()
