@@ -1,2 +1,1 @@
 ticker,event_date,v,vol_z,tone,tone_z,direction,intensity_percentile,novelty_days,tercile_label,tercile_mean_car5,tercile_n,calibration_disclaimer
-M&MFIN,2026-07-30,5.0,5.991474473951946,0.3155208333333333,0.0411321926814047,1.0,70.24793388429752,524.0,mid,-0.00048690668795241357,80,Historical average across similarly-toned events in the locked study -- not a prediction. The primary test found no statistically significant relationship between tone and forward returns (permutation p=0.763). Not a trading signal.
