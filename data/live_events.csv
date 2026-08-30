@@ -1,1 +1,2 @@
 ticker,event_date,v,vol_z,tone,tone_z,direction,intensity_percentile,novelty_days,tercile_label,tercile_mean_car5,tercile_n,calibration_disclaimer
+LICHSGFIN,2026-08-29,6.0,25.80673520031829,-0.6251,-0.4410239745889701,-1.0,98.34710743801654,703.0,bottom,0.006125822605787347,81,Historical average across similarly-toned events in the locked study -- not a prediction. The primary test found no statistically significant relationship between tone and forward returns (permutation p=0.763). Not a trading signal.
